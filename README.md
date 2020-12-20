@@ -17,8 +17,8 @@ Upcoming projects that will utilize these methods:
 ### Example
 **Original Image**
 
-![Original]()
+![Original](https://github.com/yusuf-jkhan1/comprxn/blob/main/data/md_imgs/original_civic_type_r.png)
 
 **Compressed Image**
 
-![Compressed]()
+![Compressed](https://github.com/yusuf-jkhan1/comprxn/blob/main/data/md_imgs/compressed_civic_type_r.png)
