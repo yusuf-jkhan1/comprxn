@@ -1,2 +1,3 @@
 data/football.bmp
-data/beach.bmp
+data/beach.bmpgit rm -rf --cached .
+git add .
