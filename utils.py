@@ -2,7 +2,7 @@ from PIL import Image
 import numpy as np
 from matplotlib.pyplot import imshow
 
-class img_converter:
+class img_utils:
 
     """Read in image bitmap and convert to array"""
 
@@ -21,14 +21,19 @@ class img_converter:
         img.close()
         return img_arr
 
-    def display_image(self):
+    def display_image(self, img_array=None):
         """
         Display image
 
         """
-        self.arr = self.arr.astype(dtype='uint8')
-        img = Image.fromarray(self.arr, 'RGB')
-        imshow(np.asarray(img))
+        if img_array is None:
+            self.arr = self.arr.astype(dtype='uint8')
+            img = Image.fromarray(self.arr, 'RGB')
+            imshow(np.asarray(img))
+        else:
+            arr = img_array.astype(dtype="uint8")
+            arr = Image.fromarray(arr, 'RGB')
+            imshow(np.asarray(arr))
 
     def reshape_img(self):
         """
@@ -38,3 +43,26 @@ class img_converter:
         long_array = np.reshape(self.arr, (self.arr.shape[0] * self.arr.shape[1], self.arr.shape[2]))
         self.long_array = long_array
         return long_array
+
+    def rebuild_compressed_image(self, k_cluster_obj):
+        """Takes k_cluster object and displays the compressed image"""
+        
+        centers = k_cluster_obj.current_centers_vect
+        class_assignments = k_cluster_obj.group_assignment_vect
+        original_array = self.arr
+
+        centers_list = [x.tolist() for x in centers]
+        class_assignment_list = [x for x in np.unique(class_assignments)]
+
+        centroids_dict = {}
+        for center,class_ in zip(centers_list,class_assignment_list):
+            centroids_dict[class_] = center
+
+        long_array = self.long_array
+        compressed_array = np.array([[0,0,0]]*len(long_array))
+        for ind, array_i in enumerate(zip(long_array, class_assignments)):
+            x = array_i[1]
+            compressed_array[ind] = centroids_dict[x]
+
+        compressed_array_prime = np.reshape(compressed_array, (original_array.shape[0],original_array.shape[1],original_array.shape[2]))
+        self.display_image(compressed_array_prime)

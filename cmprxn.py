@@ -5,17 +5,22 @@ import random
 
 class k_cluster:
 
-    def __init__(self, array, k, n_dim = 3, algo_type = "mediods", seed = 1):
+    seed = 1
+
+    def __init__(self, array, k, n_dim = 3, algo_type = "mediods"):
         """ """ 
         self.array = array
         self.k = k
         self.n_dim = n_dim
         self.algo_type = algo_type
-        self.seed = seed
-        self.initial_centers_vect = self._setup(array=array, k=k, n_dim=n_dim, seed=seed)
+        self.initial_centers_vect = self._setup(array=array, k=k, n_dim=n_dim)
+
+    @classmethod
+    def set_seed(cls, seed):
+        cls.seed = seed
         
 
-    def _setup(self, array, n_dim, k, seed=1):
+    def _setup(self, array, n_dim, k):
         """ """ 
         
         #Check if input array matches expectation
@@ -24,7 +29,7 @@ class k_cluster:
         assert k < array.shape[0], "Error: More clusters than observations"
 
         #For debugging and reproducibility
-        random.seed(seed)
+        random.seed(self.seed)
 
         #Initialize k Cluster Center Indexes by sample from range of array length without replacement
         c_vect_inds = random.sample(range(array.shape[0]),k)
@@ -107,8 +112,16 @@ class k_cluster:
         
         are_equal = False
 
+        step_i = 0
         while are_equal == False:
-            new_centers_vect = np.zeros(self.k)
+            new_centers_vect = np.zeros(self.k,dtype="int64")
             new_centers_vect = self._step(current_centers_vect=current_centers_vect)
             are_equal = check_equality(current_centers_vect, new_centers_vect)
             current_centers_vect = new_centers_vect.copy()
+            step_i += 1
+            #print(f"Step: {step_i}")
+
+        self.num_steps = step_i
+        self.current_centers_vect = current_centers_vect
+
+ 
