@@ -5,7 +5,7 @@
 ### Algorithmic Image Compression
 
 
-Using partioning clustering algorithms to compress an image
+Using iterative partioning algorithms written from scratch to compress an image
 
 *The modules, classes, and methods defined in this repo will serve as a basis to additional exploration.*
 
