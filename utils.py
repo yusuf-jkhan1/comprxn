@@ -1,25 +1,69 @@
 from PIL import Image
 import numpy as np
 from matplotlib.pyplot import imshow
+from urllib.request import urlretrieve
+import os
+import datetime
+import hashlib
+
 
 class img_utils:
 
-    """Read in image bitmap and convert to array"""
-
     def __init__(self, path):
+        """
+        Read in image bitmap and convert to array
+        
+        """
         self.path = path
-        self.arr = self._read_image()
+        try:
+            self.arr = self._read_image_local(self.path)
+        except:
+            self.arr = self._read_image_from_url()
 
-    def _read_image(self):
+    def _read_image_local(self, path):
         """
-        Read image and store it as 'arr' attribute
+        Read image and store it as an array
 
         """
-        Image.open(self.path).save("data/bmp/img.bmp")
-        img = Image.open("data/bmp/img.bmp")
+        if not os.path.exists('data'):
+            os.makedirs('data')
+
+        Image.open(path).save("data/img.bmp")
+        img = Image.open("data/img.bmp")
         img_arr = np.array(img, dtype='int32')
         img.close()
         return img_arr
+
+    def _read_image_from_url(self):
+        """
+        Read image from url and store it as an array
+
+        """
+
+        if not os.path.exists('data'):
+            os.makedirs('data')
+
+        fname = self._create_hashed_filename()
+
+        urlretrieve(url= self.path, filename= fname)
+        
+        img_arr = self._read_image_local(path = fname)
+
+        return img_arr
+
+    def _create_hashed_filename(self):
+        """
+        Create a filename by hashing current time as string
+
+        """
+
+        time_str = str(datetime.datetime.now()).encode()
+        hashed_obj = hashlib.md5(time_str)
+        hashed_str = hashed_obj.hexdigest()
+        ftype = self.path.split(".")[-1]
+        fname = "data/" + hashed_str + "." + ftype
+
+        return fname
 
     def display_image(self, img_array=None):
         """
@@ -64,5 +108,8 @@ class img_utils:
             x = array_i[1]
             compressed_array[ind] = centroids_dict[x]
 
-        compressed_array_prime = np.reshape(compressed_array, (original_array.shape[0],original_array.shape[1],original_array.shape[2]))
+        prime_shape = (original_array.shape[0],original_array.shape[1],original_array.shape[2])
+        compressed_array_prime = np.reshape(compressed_array, prime_shape)
+
         self.display_image(compressed_array_prime)
+
